@@ -1,115 +1,129 @@
-import Image from "next/image";
-import localFont from "next/font/local";
+import React, { useState, useCallback, useEffect } from 'react'
+import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Send } from "lucide-react"
+import { Button } from '@/components/ui/button'
 
-const geistSans = localFont({
-  src: "./fonts/GeistVF.woff",
-  variable: "--font-geist-sans",
-  weight: "100 900",
-});
-const geistMono = localFont({
-  src: "./fonts/GeistMonoVF.woff",
-  variable: "--font-geist-mono",
-  weight: "100 900",
-});
+const randomResponses = [
+  "That's an interesting question about our 3D printers!",
+  "I'd be happy to provide more information about our product line.",
+  "Our 3D printers are known for their high quality and reliability.",
+  "We offer a range of 3D printers suitable for both beginners and professionals.",
+  "Jone Jones 3D Printers are at the forefront of additive manufacturing technology.",
+  "Our customer support team is always ready to assist with any queries.",
+  "We have models that are perfect for home use and others for industrial applications.",
+  "3D printing opens up a world of creative possibilities!",
+  "Our printers come with user-friendly software for easy operation.",
+  "We offer comprehensive training and support for all our 3D printer models."
+]
+
+const multipleChoiceOptions = [
+  "Tell me about your most popular 3D printer model.",
+  "What materials can your 3D printers use?",
+  "Do you offer any discounts for educational institutions?",
+  "Can you explain the difference between FDM and SLA printers?",
+  "What kind of customer support do you provide?"
+]
 
 export default function Home() {
-  return (
-    <div
-      className={`${geistSans.variable} ${geistMono.variable} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
-    >
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/pages/index.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [messages, setMessages] = useState([
+    { id: 1, sender: 'bot', text: "Welcome to Jone Jones 3D Printers! How can I assist you today?" },
+    { id: 2, sender: 'user', text: "Hi, I'm interested in your 3D printers." },
+  ])
+  const [input, setInput] = useState('')
+  const [showOptions, setShowOptions] = useState(false)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+  const getRandomResponses = useCallback(() => {
+    const shuffled = [...randomResponses].sort(() => 0.5 - Math.random())
+    return shuffled.slice(0, 2)
+  }, [])
+
+  const getRandomOptions = useCallback(() => {
+    const shuffled = [...multipleChoiceOptions].sort(() => 0.5 - Math.random())
+    return shuffled.slice(0, 3)
+  }, [])
+
+  const handleSend = useCallback((text: string) => {
+    setMessages(prev => [...prev, { id: prev.length + 1, sender: 'user', text }])
+    setInput('')
+    setShowOptions(false)
+    
+    // Send 2 random messages and then show options
+    getRandomResponses().forEach((response, index) => {
+      setTimeout(() => {
+        setMessages(prev => [...prev, { id: prev.length + 1, sender: 'bot', text: response }])
+        if (index === 1) {
+          setShowOptions(true)
+        }
+      }, (index + 1) * 1000) // Stagger responses by 1 second each
+    })
+  }, [getRandomResponses])
+
+  const handleOptionClick = useCallback((option: string) => {
+    handleSend(option)
+  }, [handleSend])
+
+  useEffect(() => {
+    const scrollArea = document.querySelector('.scroll-area')
+    if (scrollArea) {
+      scrollArea.scrollTop = scrollArea.scrollHeight
+    }
+  }, [messages])
+
+  return (
+    <div className="flex flex-col h-[600px] max-w-md mx-auto border rounded-lg overflow-hidden bg-gradient-to-br from-blue-50 to-gray-100">
+      <div className="bg-blue-600 text-white p-4">
+        <h1 className="text-xl font-bold">Jone Jones 3D Printers Chat</h1>
+      </div>
+      <ScrollArea className="flex-grow p-4 scroll-area">
+        {messages.map((message) => (
+          <div
+            key={message.id}
+            className={`mb-4 ${
+              message.sender === 'user' ? 'text-right' : 'text-left'
+            }`}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            <div
+              className={`inline-block p-3 rounded-lg ${
+                message.sender === 'user'
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-200 text-gray-800'
+              }`}
+            >
+              {message.text}
+            </div>
+          </div>
+        ))}
+        {showOptions && (
+          <div className="mt-4">
+            <p className="text-sm text-gray-500 mb-2">Choose an option or type your own question:</p>
+            {getRandomOptions().map((option, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                className="mb-2 w-full text-left justify-start"
+                onClick={() => handleOptionClick(option)}
+              >
+                {option}
+              </Button>
+            ))}
+          </div>
+        )}
+      </ScrollArea>
+      <div className="p-4 bg-white border-t">
+        <div className="flex gap-2">
+          <Input
+            placeholder="Type your message..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && handleSend(input)}
+          />
+          <Button onClick={() => handleSend(input)}>
+            <Send className="h-4 w-4 mr-2" />
+            Send
+          </Button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
     </div>
-  );
+  )
 }
