@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react'
-import { Input } from "@/components/ui/input"
-import { ScrollArea } from "@/components/ui/scroll-area"
 import { Send } from "lucide-react"
 import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@radix-ui/react-scroll-area'
+import { Input } from '@/components/ui/input'
 
 const randomResponses = [
   "That's an interesting question about our 3D printers!",
