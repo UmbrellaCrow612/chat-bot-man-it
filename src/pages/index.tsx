@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { Send } from "lucide-react"
-import { Button } from '@/components/ui/button'
-import { ScrollArea } from '@radix-ui/react-scroll-area'
-import { Input } from '@/components/ui/input'
 
 const randomResponses = [
   "That's an interesting question about our 3D printers!",
@@ -25,7 +25,7 @@ const multipleChoiceOptions = [
   "What kind of customer support do you provide?"
 ]
 
-export default function Home() {
+export default function Component() {
   const [messages, setMessages] = useState([
     { id: 1, sender: 'bot', text: "Welcome to Jone Jones 3D Printers! How can I assist you today?" },
     { id: 2, sender: 'user', text: "Hi, I'm interested in your 3D printers." },
